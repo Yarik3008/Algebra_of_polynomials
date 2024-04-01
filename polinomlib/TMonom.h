@@ -64,4 +64,14 @@ struct TMonom
     {
         return (degX < other.degX || (degX == other.degX && degY < other.degY) || (degX == other.degX && degY == other.degY && degZ < other.degZ));
     }
+
+    TMonom TMonom::Derivative() const
+    {
+        return TMonom(coef * degX, degX > 0 ? degX - 1 : 0, degY, degZ);
+    }
+
+    TMonom TMonom::Integral() const
+    {
+        return TMonom(coef / (degX + 1), degX + 1, degY, degZ);
+    }
 };

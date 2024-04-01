@@ -30,7 +30,9 @@ public:
     TPolinom Derivative();
     TPolinom Integral();
 
+
     void AddMonom(TMonom newMonom);
+    void PrintPolinom() const;
     TPolinom MultMonom(TMonom monom);
     bool IsZero() const;
     std::string ToString();
@@ -101,7 +103,7 @@ TPolinom& TPolinom::operator=(TPolinom& other)
 void TPolinom::AddMonom(TMonom m)
 {
     if (m.GetCoef() == 0) {
-        throw std::invalid_argument("Коэффициент не должен быть равен нулю.");
+        return;
     }
     bool isAdded = false;
     for (TMonom& monom : monomList) {
@@ -122,6 +124,13 @@ void TPolinom::AddMonom(TMonom m)
             return a < b; // здесь должно быть правильное условие сравнения мономов
             });
     }
+}
+
+void TPolinom::PrintPolinom() const {
+    for (const TMonom& monom : monomList) {
+        std::cout << monom.ToString() << " + ";
+    }
+    std::cout << std::endl;
 }
 
 TPolinom TPolinom::MultMonom(TMonom monom)
@@ -203,6 +212,36 @@ TPolinom TPolinom::operator/(TPolinom& other)
     return result;
 }
 
+TPolinom TPolinom::CalcPoint(double x, double y, double z)
+{
+    TPolinom result;
+    for (const TMonom& monom : monomList) {
+        double value = monom.GetCoef() * pow(x, monom.GetDegX()) * pow(y, monom.GetDegY()) * pow(z, monom.GetDegZ());
+        result.AddMonom(TMonom(value, 0, 0, 0));
+    }
+    return result;
+}
+
+TPolinom TPolinom::Derivative()
+{
+    TPolinom result;
+    for (const TMonom& monom : monomList) {
+        TMonom derivedMonom = monom.Derivative();
+        result.AddMonom(derivedMonom);
+    }
+    return result;
+}
+
+TPolinom TPolinom::Integral()
+{
+    TPolinom result;
+    for (const TMonom& monom : monomList) {
+        TMonom integratedMonom = monom.Integral();
+        result.AddMonom(integratedMonom);
+    }
+    return result;
+}
+
 bool TPolinom::IsZero() const
 {
     return monomList.empty();
@@ -211,8 +250,13 @@ bool TPolinom::IsZero() const
 string TPolinom::ToString()
 {
     string result;
+    if (monomList.empty())
+        return "0";
+
     for (const TMonom& monom : monomList) {
         result += monom.ToString() + " ";
     }
     return result;
 }
+
+
