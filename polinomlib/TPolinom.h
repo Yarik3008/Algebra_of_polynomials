@@ -32,7 +32,7 @@ public:
 
 
     void AddMonom(TMonom newMonom);
-    void PrintPolinom() const;
+    void PrintPolinom(ostream& os) const;
     TPolinom MultMonom(TMonom monom);
     bool IsZero() const;
     std::string ToString();
@@ -126,11 +126,11 @@ void TPolinom::AddMonom(TMonom m)
     }
 }
 
-void TPolinom::PrintPolinom() const {
+void TPolinom::PrintPolinom(ostream& os) const {
     for (const TMonom& monom : monomList) {
-        std::cout << monom.ToString() << " + ";
+        os << monom.ToString() << " + ";
     }
-    std::cout << std::endl;
+    os << std::endl;
 }
 
 TPolinom TPolinom::MultMonom(TMonom monom)
