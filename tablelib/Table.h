@@ -1,15 +1,9 @@
 ﻿#pragma once
-#include <iostream>
-#include <map>
 #include "TPolinom.h"
-#include <vector>
 using namespace std;
 
-
-
-// Замените типы KeyType и ValueType соответственно на типы ключей и значений, которые используете в вашей таблице
-using KeyType = int; // пример типа ключа
-using ValueType = string;
+using KeyType = string;
+using ValueType = TPolinom;
 
 class Table {
 public:
@@ -33,5 +27,14 @@ public:
     virtual const ValueType* GetValuePtr() const = 0;
 
     virtual ~Table() = default;  // Виртуальный деструктор
+    
+    friend ostream& operator<<(ostream& os, Table& cont);
 };
 
+ostream& operator<<(ostream& os, Table& tab) {
+    for (tab.Reset(); !tab.IsTabEnded(); tab.GoNext())
+    {
+    os << " Key: " << tab.GetKey() << " Val: " << *tab.GetValuePtr() << endl;
+    }
+    return os;
+}

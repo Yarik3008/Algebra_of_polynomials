@@ -1,47 +1,46 @@
-﻿#include "..\tablelib\Table.h"
-#include "..\tablelib\ArrayTable.h"
-#include "..\tablelib\ListTable.h"
+﻿#include "../tablelib/PolinomTableController.h"
 using namespace std;
 
 int main()
 {
     setlocale(LC_ALL, "Russian");
-    ArrayTable arrayTable;
 
-    // Вставляем элементы в массивную таблицу
-    arrayTable.Insert(1, "Value1");
-    arrayTable.Insert(2, "Value2");
-    arrayTable.Insert(3, "Value3");
+    PolinomTableController controller;
+    
+    // Создаем таблицы и добавляем их в контроллер
+    controller.AddTable("array", new ArrayTable());
+    controller.AddTable("sorted", new SortedTable());
+    controller.AddTable("list", new ListTable());
+    controller.AddTable("chain_hash", new ChainHashTable());
+    controller.AddTable("double_hash", new DoubleHashTable());
+    controller.AddTable("avl", new AVLTable());
 
-    // Выводим массивную таблицу на экран
-    cout << arrayTable;
+    // Вставляем элементы в таблицы
+    controller.Insert("pol2", TPolinom("3,2x^2y^3z^1-1,3x^1z^4"));
+    controller.Insert("pol1", TPolinom("-3,2x^2y^3z^1+1,3x^1z^4"));
+    controller.Insert("const6", TPolinom("6,0"));
+    controller.Insert("q", TPolinom("4,0x^2"));
 
-    ListTable listTable;
+    controller.Insert("new_pol", "2 * pol1 + 2 * pol2 + 3,6 * q - const6");
 
-    // Вставляем элементы в список
-    listTable.Insert(10, "key1");
-    listTable.Insert(20, "key2");
-    listTable.Insert(30, "key3");
+    // Выводим все таблицы на экран
+    controller.PrintAllTables(cout);
 
-    // Ищем значение по ключу
-    const int* value = nullptr;
-    ValueType* ptrValue = listTable.Find(20);
+    // Ищем значение по ключу в активной таблице
+    ValueType* ptrValue = controller.Find("pol2");
     if (ptrValue) {
-        value = reinterpret_cast<const int*>(ptrValue);
-        cout << "Значение для ключа 20: " << *value << endl;
+        cout << "Значение для ключа \"pol2\": " << *ptrValue << endl;
     }
     else {
-        cout << "Ключ 20 не найден." << endl;
+        cout << "Ключ \"pol2\" не найден." << endl;
     }
 
-    // Удаляем элемент
-    listTable.Delete(10);
+    // Удаляем элемент из всех таблиц
+    controller.Delete("pol1");
 
-    // Выводим все элементы таблицы
-    cout << "Table contents:" << endl;
-    for (listTable.Reset(); !listTable.IsTabEnded(); listTable.GoNext()) {
-        cout << "Key: " << listTable.GetKey() << ", Value: " << *listTable.GetValuePtr() << endl;
-    }
+    // Выводим все элементы активной таблицы
+    controller.ChangeActiveTable("avl");
+    cout << "Удаление pol1:" << endl << controller;
 
     return 0;
 }

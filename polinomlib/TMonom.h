@@ -29,7 +29,30 @@ struct TMonom
     std::string ToString() const
     {
         std::ostringstream oss;
-        oss << coef << "x^" << degX << "y^" << degY << "z^" << degZ;
+        if (coef == 0)
+            return "0";
+        else
+            oss << coef;
+
+        if (degX > 0) {
+            oss << "x";
+            if (degX > 1) {
+                oss << "^" << degX;
+            }
+        }
+        if (degY > 0) {
+            oss << "y";
+            if (degY > 1) {
+                oss << "^" << degY;
+            }
+        }
+        if (degZ > 0) {
+            oss << "z";
+            if (degZ > 1) {
+                oss << "^" << degZ;
+            }
+        }
+
         return oss.str();
     }
 

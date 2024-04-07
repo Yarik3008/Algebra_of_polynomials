@@ -6,7 +6,7 @@ using namespace std;
 
 
 class ArrayTable : public Table {
-private:
+protected:
     vector<pair<KeyType, ValueType>> data;
     size_t currentIndex;
 
@@ -36,7 +36,7 @@ public:
     }
 
     void Insert(const KeyType& key, const ValueType& value) override {
-        data.emplace_back(key, value);
+        data.push_back(pair<KeyType, ValueType>(const_cast<KeyType&>(key), const_cast<ValueType&>(value)));
     }
 
     void Delete(const KeyType& key) override {
@@ -57,8 +57,7 @@ public:
     }
 
     int GoNext() override {
-        currentIndex++;
-        return (int)data.size();
+        return ++currentIndex;
     }
 
     const KeyType& GetKey() const override {
@@ -67,17 +66,6 @@ public:
 
     const ValueType* GetValuePtr() const override {
         return &(data[currentIndex].second);
-    }
-    friend ostream& operator<<(ostream& os, ArrayTable& tab)
-    {
-        cout << "Table printing" << endl;
-        for (tab.Reset(); !tab.IsTabEnded(); tab.GoNext())
-        {
-            os << " Key: " << tab.GetKey() << " Val: ";
-            tab.GetValuePtr()->PrintPolinom(os);
-            os << endl;
-        }
-        return os;
     }
 };
 

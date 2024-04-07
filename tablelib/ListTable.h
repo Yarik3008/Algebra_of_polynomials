@@ -34,7 +34,7 @@ public:
     }
 
     void Insert(const KeyType& key, const ValueType& value) override {
-        data.push_back(make_pair(key, value));
+        data.push_back(pair<KeyType, ValueType>(key, value));
     }
 
     void Delete(const KeyType& key) override {
@@ -68,17 +68,6 @@ public:
 
     const ValueType* GetValuePtr() const override {
         return &(it->second);
-    }
-
-    // Перегрузка для вывода содержимого списка
-    friend ostream& operator<<(ostream& os, ListTable& tab) {
-        cout << "ListTable printing" << endl;
-        for (auto& entry : tab.data) {
-            os << " Key: " << entry.first << " Val: ";
-            entry.second.PrintPolinom(os);
-            os << endl;
-        }
-        return os;
     }
 };
 

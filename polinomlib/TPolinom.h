@@ -18,8 +18,8 @@ private:
 
 public:
     TPolinom();
-    TPolinom(TPolinom& other);
-    TPolinom(std::string str);
+    TPolinom(const TPolinom& other);
+    TPolinom(string str);
     TPolinom& operator=(TPolinom& other);
     TPolinom operator+(TPolinom& q);
     TPolinom operator-(TPolinom& q);
@@ -35,7 +35,8 @@ public:
     void PrintPolinom(ostream& os) const;
     TPolinom MultMonom(TMonom monom);
     bool IsZero() const;
-    std::string ToString();
+    string ToString() const;
+    friend ostream& operator<<(ostream& ostr, const TPolinom& q);
 };
 
 TPolinom::TPolinom()
@@ -43,20 +44,25 @@ TPolinom::TPolinom()
     // конструктор
 }
 
-TPolinom::TPolinom(TPolinom& other)
+TPolinom::TPolinom(const TPolinom& other)
 {
     // конструктор копирования
     this->monomList = other.monomList;
 }
 
-TPolinom::TPolinom(std::string str)
+TPolinom::TPolinom(string str)
 {
     size_t pos = 0;
     while (pos < str.length()) {
+        if (str[pos] == ' ') {
+            pos++;
+            continue;
+        }
+
         double coef = 0.0;
         int degX = 0, degY = 0, degZ = 0;
         char var;
-        if (isdigit(str[pos]) || str[pos] == '-' || str[pos] == '+') {
+        if (isdigit(str[pos]) || str[pos] == '.' || str[pos] == ',' || str[pos] == '-' || str[pos] == '+') {
             size_t nextPos;
             coef = stod(str.substr(pos), &nextPos);
             pos += nextPos;
@@ -111,7 +117,7 @@ void TPolinom::AddMonom(TMonom m)
             monom.SetCoef(monom.GetCoef() + m.GetCoef());
             if (fabs(monom.GetCoef()) < EPSILON) {
                 // удаление монома, если коэффициент стал равен нулю
-                monomList.erase(std::remove(monomList.begin(), monomList.end(), monom), monomList.end());
+                monomList.erase(remove(monomList.begin(), monomList.end(), monom), monomList.end());
             }
             isAdded = true;
             break;
@@ -120,7 +126,7 @@ void TPolinom::AddMonom(TMonom m)
     if (!isAdded) {
         monomList.push_back(m);
         // сортировка списка мономов по убыванию степеней
-        std::sort(monomList.begin(), monomList.end(), [](const TMonom& a, const TMonom& b) {
+        sort(monomList.begin(), monomList.end(), [](const TMonom& a, const TMonom& b) {
             return a < b; // здесь должно быть правильное условие сравнения мономов
             });
     }
@@ -130,7 +136,7 @@ void TPolinom::PrintPolinom(ostream& os) const {
     for (const TMonom& monom : monomList) {
         os << monom.ToString() << " + ";
     }
-    os << std::endl;
+    os << endl;
 }
 
 TPolinom TPolinom::MultMonom(TMonom monom)
@@ -186,7 +192,7 @@ TPolinom TPolinom::operator*(TPolinom& other)
 TPolinom TPolinom::operator/(TPolinom& other)
 {
     if (other.IsZero()) {
-        throw std::invalid_argument("Деление на ноль запрещено.");
+        throw invalid_argument("Деление на ноль запрещено.");
     }
 
     if (monomList.size() < other.monomList.size()) {
@@ -247,16 +253,20 @@ bool TPolinom::IsZero() const
     return monomList.empty();
 }
 
-string TPolinom::ToString()
+string TPolinom::ToString() const
 {
     string result;
     if (monomList.empty())
         return "0";
 
-    for (const TMonom& monom : monomList) {
-        result += monom.ToString() + " ";
+    for (auto it = monomList.begin(); it < monomList.end() - 1; it++) {
+        result += it->ToString() + " + ";
     }
+    result += monomList.back().ToString();
     return result;
 }
 
-
+ostream& operator<<(ostream& ostr, const TPolinom& q)
+{
+    return ostr << q.ToString();
+}
